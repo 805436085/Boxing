@@ -5,21 +5,37 @@
 
 // Sets default values
 AMyCharacterBase::AMyCharacterBase()
+	: bAbilitiesInitialized(false)
+	, bIsAttacking(false)
+	, bIsUsingMelee(false)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Create ability system component, and set it to be explicitly replicated
 	AbilitySystemComponent = CreateDefaultSubobject<UMyAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
-	//AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetIsReplicated(true);
 
 	// Create the attribute set, this replicates by default
 	AttributeSet = CreateDefaultSubobject<UMyAttributeSet>(TEXT("AttributeSet"));
-
-	bAbilitiesInitialized = false;
 }
 
-UMyAbilitySystemComponent * AMyCharacterBase::GetAbilitySystemComponent() const
+void AMyCharacterBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (AttributeSet && bAbilitiesInitialized)
+	{
+		float SP = DeltaSeconds * 10 + AttributeSet->GetSP();
+		if (SP > AttributeSet->GetMaxSP())
+			SP = AttributeSet->GetMaxSP();
+		else if (SP < 0)
+			SP = 0.0f;
+		AttributeSet->SetSP(SP);
+	}
+}
+
+UAbilitySystemComponent * AMyCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
 }
@@ -28,24 +44,15 @@ void AMyCharacterBase::PossessedBy(AController * NewController)
 {
 	Super::PossessedBy(NewController);
 
-	/*if (AbilitySystemComponent)
-	{
-		AddStartupGameplayAbilities();
-		AbilitySystemComponent->InitAbilityActorInfo(this, this);
-	}*/
-}
-
-void AMyCharacterBase::UnPossessed()
-{
-}
-
-void AMyCharacterBase::GiveAbility()
-{
 	if (AbilitySystemComponent)
 	{
 		AddStartupGameplayAbilities();
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	}
+}
+
+void AMyCharacterBase::UnPossessed()
+{
 }
 
 void AMyCharacterBase::AddStartupGameplayAbilities()
@@ -64,4 +71,41 @@ void AMyCharacterBase::AddStartupGameplayAbilities()
 
 void AMyCharacterBase::RemoveStartupGameplayAbilities()
 {
+}
+
+void AMyCharacterBase::HandleHealthChanged(float DeltaValue)
+{
+	if (bAbilitiesInitialized)
+	{
+		OnHealthChanged(DeltaValue);
+	}
+}
+
+void AMyCharacterBase::HandleSPChanged(float DeltaValue)
+{
+	if (bAbilitiesInitialized && AttributeSet)
+	{
+		float SP = AttributeSet->GetSP() + DeltaValue;
+		if (SP > AttributeSet->GetMaxSP())
+			SP = AttributeSet->GetMaxSP();
+		else if (SP < 0)
+			SP = 0.0f;
+		AttributeSet->SetSP(SP);
+	}
+}
+
+void AMyCharacterBase::UpdateHP(float HP)
+{
+	if (AttributeSet)
+	{
+		AttributeSet->SetHealth(HP);
+	}
+}
+
+void AMyCharacterBase::GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UMyGameplayAbilityBase*>& ActiveAbilities)
+{
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->GetActiveAbilitiesWithTags(AbilityTags, ActiveAbilities);
+	}
 }

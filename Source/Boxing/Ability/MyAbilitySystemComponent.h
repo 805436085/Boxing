@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
+#include "MyGameplayAbilityBase.h"
 #include "MyAbilitySystemComponent.generated.h"
 
 /**
@@ -14,4 +15,8 @@ class BOXING_API UMyAbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
 	
+public:
+	UMyAbilitySystemComponent();
+
+	void GetActiveAbilitiesWithTags(const FGameplayTagContainer& GameplayTagContainer, TArray<UMyGameplayAbilityBase*>& ActiveAbilities);
 };
