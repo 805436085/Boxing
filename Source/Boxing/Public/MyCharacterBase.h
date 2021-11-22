@@ -60,6 +60,9 @@ public:
 		void OnHealthChanged(float DeltaValue);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = custom)
+		void OnDamaged(float DeltaValue);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = custom)
 		void OnSPChanged(float DeltaValue);
 
 	UFUNCTION(BlueprintCallable, Category = custom)

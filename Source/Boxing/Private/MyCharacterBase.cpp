@@ -77,7 +77,7 @@ void AMyCharacterBase::HandleHealthChanged(float DeltaValue)
 {
 	if (bAbilitiesInitialized)
 	{
-		OnHealthChanged(DeltaValue);
+		OnDamaged(DeltaValue);
 	}
 }
 
