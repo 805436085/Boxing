@@ -7,18 +7,17 @@
 AMyCharacterBase::AMyCharacterBase()
 	: bAbilitiesInitialized(false)
 	, bIsAttacking(false)
-	, bIsUsingMelee(false)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Create ability system component, and set it to be explicitly replicated
-	AbilitySystemComponent = CreateDefaultSubobject<UMyAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
-	AbilitySystemComponent->SetIsReplicated(true);
+
 
 	// Create the attribute set, this replicates by default
 	AttributeSet = CreateDefaultSubobject<UMyAttributeSet>(TEXT("AttributeSet"));
 }
+
+
 
 void AMyCharacterBase::Tick(float DeltaSeconds)
 {
@@ -33,11 +32,6 @@ void AMyCharacterBase::Tick(float DeltaSeconds)
 			SP = 0.0f;
 		AttributeSet->SetSP(SP);
 	}
-}
-
-UAbilitySystemComponent * AMyCharacterBase::GetAbilitySystemComponent() const
-{
-	return AbilitySystemComponent;
 }
 
 void AMyCharacterBase::PossessedBy(AController * NewController)
