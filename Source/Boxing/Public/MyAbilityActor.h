@@ -9,11 +9,10 @@
 #include "Boxing/Ability/MyAttributeSet.h"
 #include "Boxing/Ability/MyGameplayAbilityBase.h"
 #include "GameplayAbilitySpec.h"
-#include "MyClass.h"
 #include "MyAbilityActor.generated.h"
 
 UCLASS()
-class BOXING_API AMyAbilityActor : public UMyClass, public IAbilitySystemInterface
+class BOXING_API AMyAbilityActor : public AActor, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 	

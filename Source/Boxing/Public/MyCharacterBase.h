@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-
+#include "MyAbilityActor.h"
 #include "MyCharacterBase.generated.h"
 
 UCLASS()
-class BOXING_API AMyCharacterBase : public ACharacter, public AMyAbilityActor
+class BOXING_API AMyCharacterBase : public ACharacter, public virtual AMyAbilityActor
 {
 	GENERATED_BODY()
 
