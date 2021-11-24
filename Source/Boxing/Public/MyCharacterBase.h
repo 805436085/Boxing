@@ -4,17 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "MyAbilityActor.h"
+#include "AbilitySystemInterface.h"
+#include "Boxing/Ability/MyAbilitySystemComponent.h"
+#include "Boxing/Ability/MyAttributeSet.h"
+#include "Boxing/Ability/MyGameplayAbilityBase.h"
+#include "GameplayAbilitySpec.h"
 #include "MyCharacterBase.generated.h"
 
 UCLASS()
-class BOXING_API AMyCharacterBase : public ACharacter, public virtual AMyAbilityActor
+class BOXING_API AMyCharacterBase : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
 	AMyCharacterBase();
+
+	// Implement IAbilitySystemInterface
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const;
 
 	/** Update the character. (Running, health etc). */
 	virtual void Tick(float DeltaSeconds) override;
@@ -77,6 +84,13 @@ public:
 protected:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = custom)
 		void InitBoxCollision();
+
+	/** The component used to handle ability system interactions */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		UMyAbilitySystemComponent* AbilitySystemComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
+		FGameplayTag CurrentGameplayTag;
 
 protected:
 	/** List of attributes modified by the ability system */
