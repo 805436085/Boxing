@@ -61,7 +61,7 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 	else if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
-
+		SetDamage(0.0f);
 		DeltaValue = 0 - DeltaValue;
 		if (TargetCharacter)
 		{
