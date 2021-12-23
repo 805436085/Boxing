@@ -2,6 +2,7 @@
 
 
 #include "MyCharacterBase.h"
+#include "GameFramework/PlayerState.h"
 
 // Sets default values
 AMyCharacterBase::AMyCharacterBase()
@@ -40,6 +41,7 @@ void AMyCharacterBase::Tick(float DeltaSeconds)
 	}
 }
 
+//
 void AMyCharacterBase::PossessedBy(AController * NewController)
 {
 	Super::PossessedBy(NewController);
@@ -78,6 +80,14 @@ void AMyCharacterBase::HandleHealthChanged(float DeltaValue)
 	if (bAbilitiesInitialized)
 	{
 		OnDamaged(DeltaValue);
+	}
+}
+
+void AMyCharacterBase::OnRep_PlayerState()
+{
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	}
 }
 

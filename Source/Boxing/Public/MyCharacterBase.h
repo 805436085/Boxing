@@ -37,6 +37,8 @@ public:
 
 	void HandleHealthChanged(float DeltaValue);
 
+	virtual void OnRep_PlayerState();
+
 public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = custom)
 		void NotifyBegin_OnMeleeAttack();
