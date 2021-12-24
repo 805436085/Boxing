@@ -18,6 +18,7 @@ UMyAttributeSet::UMyAttributeSet()
 	, MoveSpeed(1.0f)
 	, Damage(0.0f)
 {
+	
 }
 
 void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData & Data)
@@ -36,7 +37,14 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 	{
 		TargetCharacter = Cast<AMyCharacterBase>(Data.Target.AbilityActorInfo->AvatarActor.Get());
 	}
-
+	if (TargetCharacter)
+	{
+		if (!TargetCharacter->HasAuthority())
+		{
+			int j = 0;
+		}
+	}
+	
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		// Handle other health changes such as from healing or direct modifiers

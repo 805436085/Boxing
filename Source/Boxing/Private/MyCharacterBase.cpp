@@ -79,7 +79,15 @@ void AMyCharacterBase::HandleHealthChanged(float DeltaValue)
 {
 	if (bAbilitiesInitialized)
 	{
+		if (!HasAuthority())
+		{
+			int i = 0;
+		}
 		OnDamaged(DeltaValue);
+	}
+	else
+	{
+		int j = 0;
 	}
 }
 
