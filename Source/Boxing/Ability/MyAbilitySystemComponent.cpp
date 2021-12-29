@@ -5,7 +5,17 @@
 
 UMyAbilitySystemComponent::UMyAbilitySystemComponent()
 {
+	m_bAbilitiesHaveGiven = false;
+}
 
+void UMyAbilitySystemComponent::setAbilitiesHaveGiven(bool b)
+{
+	m_bAbilitiesHaveGiven = b;
+}
+
+bool UMyAbilitySystemComponent::getAbilitiesHaveGiven()
+{
+	return m_bAbilitiesHaveGiven;
 }
 
 void UMyAbilitySystemComponent::GetActiveAbilitiesWithTags(const FGameplayTagContainer& GameplayTagContainer, TArray<UMyGameplayAbilityBase*>& ActiveAbilities)

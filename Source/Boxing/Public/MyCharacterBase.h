@@ -5,14 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
-#include "Boxing/Ability/MyAbilitySystemComponent.h"
-#include "Boxing/Ability/MyAttributeSet.h"
 #include "Boxing/Ability/MyGameplayAbilityBase.h"
 #include "GameplayAbilitySpec.h"
 #include "MyCharacterBase.generated.h"
 
 UCLASS()
-class BOXING_API AMyCharacterBase : public ACharacter, public IAbilitySystemInterface
+class BOXING_API AMyCharacterBase : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -20,12 +18,10 @@ public:
 	// Sets default values for this character's properties
 	AMyCharacterBase();
 
-	// Implement IAbilitySystemInterface
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const;
-
 	/** Update the character. (Running, health etc). */
 	virtual void Tick(float DeltaSeconds) override;
-
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void UnPossessed() override;
 
@@ -87,21 +83,21 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = custom)
 		void InitBoxCollision();
 
-	/** The component used to handle ability system interactions */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		UMyAbilitySystemComponent* AbilitySystemComponent;
+	UFUNCTION(BlueprintImplementableEvent, Category = custom)
+		void CreateHUD();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Abilities)
+	TWeakObjectPtr<class UMyAbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
+	TWeakObjectPtr<class UMyAttributeSet> AttributeSet;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
 		FGameplayTag CurrentGameplayTag;
 
-protected:
-	/** List of attributes modified by the ability system */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
-		UMyAttributeSet* AttributeSet;
-
 	/** Abilities to grant to this character on creation. These will be activated by tag or event and are not bound to specific inputs */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
-		TArray<TSubclassOf<UGameplayAbility>> GameplayAbilities;
+		TArray<TSubclassOf<UMyGameplayAbilityBase>> GameplayAbilities;
 
 	/** If true we have initialized our abilities */
 	UPROPERTY(BlueprintReadOnly)
@@ -113,4 +109,20 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = custom)
 		TArray<AMyCharacterBase*> CollisionTargetArray;
+
+/**
+* Setters for Attributes. Only use these in special cases like Respawning, otherwise use a GE to change Attributes.
+* These change the Attribute's Base Value.
+*/
+
+	virtual void SetHP(float Health);
+	virtual void SetMP(float Mana);
+	virtual void SetSP(float Stamina);
+
+
+	void BindASCInput();
+
+private:
+	const int32 defaultLevel = 1;
+	bool ASCInputBound = false;
 };
