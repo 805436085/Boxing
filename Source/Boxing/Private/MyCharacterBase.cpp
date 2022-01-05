@@ -84,7 +84,7 @@ void AMyCharacterBase::AddStartupGameplayAbilities()
 	for (TSubclassOf<UMyGameplayAbilityBase>& StartupAbility : GameplayAbilities)
 	{
 		AbilitySystemComponent->GiveAbility(
-			FGameplayAbilitySpec(StartupAbility, 1, static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
+			FGameplayAbilitySpec(StartupAbility, 1, INDEX_NONE, this));
 	}
 
 	AbilitySystemComponent->setAbilitiesHaveGiven(true);

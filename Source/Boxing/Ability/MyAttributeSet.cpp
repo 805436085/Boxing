@@ -43,6 +43,10 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 		{
 			int j = 0;
 		}
+		else
+		{
+			int i = 0;
+		}
 	}
 	
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())

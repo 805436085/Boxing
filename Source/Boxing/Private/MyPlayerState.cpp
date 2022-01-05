@@ -12,7 +12,7 @@ AMyPlayerState::AMyPlayerState()
 
 	// Mixed mode means we only are replicated the GEs to ourself, not the GEs to simulated proxies. If another GDPlayerState (Hero) receives a GE,
 	// we won't be told about it by the Server. Attributes, GameplayTags, and GameplayCues will still replicate to us.
-	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Full);
 
 	// Set PlayerState's NetUpdateFrequency to the same as the Character.
 	// Default is very low for PlayerStates and introduces perceived lag in the ability system.
