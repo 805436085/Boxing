@@ -13,6 +13,11 @@ AMyCharacterBase::AMyCharacterBase()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+UAbilitySystemComponent* AMyCharacterBase::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent.Get();
+}
+
 void AMyCharacterBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -96,7 +101,7 @@ void AMyCharacterBase::RemoveStartupGameplayAbilities()
 
 void AMyCharacterBase::HandleHealthChanged(float DeltaValue)
 {
-	if (bAbilitiesInitialized)
+	if (AbilitySystemComponent.IsValid() && AbilitySystemComponent->getAbilitiesHaveGiven())
 	{
 		if (!HasAuthority())
 		{

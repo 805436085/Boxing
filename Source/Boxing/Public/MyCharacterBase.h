@@ -10,13 +10,16 @@
 #include "MyCharacterBase.generated.h"
 
 UCLASS()
-class BOXING_API AMyCharacterBase : public ACharacter
+class BOXING_API AMyCharacterBase : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
 	AMyCharacterBase();
+
+	// Implement IAbilitySystemInterface
+	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	/** Update the character. (Running, health etc). */
 	virtual void Tick(float DeltaSeconds) override;
