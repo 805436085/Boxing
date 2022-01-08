@@ -5,6 +5,7 @@
 #include "GameplayEffect.h"
 #include "GameplayEffectExtension.h"
 #include "MyCharacterBase.h"
+#include "Net/UnrealNetwork.h"
 
 UMyAttributeSet::UMyAttributeSet()
 	: Health(100.0f)
@@ -78,6 +79,31 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 		if (TargetCharacter)
 		{
 			TargetCharacter->HandleHealthChanged(DeltaValue);
+		}
+	}
+}
+
+void UMyAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UMyAttributeSet, Health, COND_None, REPNOTIFY_Always);
+}
+
+void UMyAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
+{
+	//GAMEPLAYATTRIBUTE_REPNOTIFY(UMyAttributeSet, Health, OldHealth);
+	if (GetActorInfo() == NULL)
+	{
+		return;
+	}
+	AMyCharacterBase* Owner = Cast<AMyCharacterBase>(GetActorInfo()->AvatarActor);
+	if (Owner)
+	{
+		float DeltaValue = Health.GetCurrentValue() - OldHealth.GetCurrentValue();
+		if (DeltaValue != 0)
+		{
+			Owner->HandleHealthChanged(DeltaValue);
 		}
 	}
 }

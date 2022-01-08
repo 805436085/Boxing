@@ -101,7 +101,7 @@ void AMyCharacterBase::RemoveStartupGameplayAbilities()
 
 void AMyCharacterBase::HandleHealthChanged(float DeltaValue)
 {
-	if (AbilitySystemComponent.IsValid() && AbilitySystemComponent->getAbilitiesHaveGiven())
+	if (AbilitySystemComponent.IsValid())
 	{
 		if (!HasAuthority())
 		{
