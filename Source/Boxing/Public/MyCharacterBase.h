@@ -87,6 +87,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = custom)
 		void OnClientInit();
 
+	UFUNCTION(BlueprintCallable, Category = "GAS|Attributes")
+		float GetHealth() const;
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = custom)
 		void InitBoxCollision();

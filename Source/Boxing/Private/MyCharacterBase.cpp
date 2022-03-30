@@ -185,6 +185,16 @@ void AMyCharacterBase::GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityT
 	}
 }
 
+float AMyCharacterBase::GetHealth() const
+{
+	if (AttributeSet.IsValid())
+	{
+		return AttributeSet->GetHealth();
+	}
+
+	return 0.0f;
+}
+
 void AMyCharacterBase::SetHP(float Health)
 {
 	if (AttributeSet.IsValid())

@@ -26,6 +26,8 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 {
 	Super::PostGameplayEffectExecute(Data);
 
+	FGameplayEffectContextHandle Context = Data.EffectSpec.GetContext();
+
 	// Compute the delta between old and new, if it is available
 	float DeltaValue = 0;
 	if (Data.EvaluatedData.ModifierOp == EGameplayModOp::Type::Additive)
@@ -73,6 +75,12 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 	}
 	else if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
+		const FHitResult* hitResult = Context.GetHitResult();
+		if (hitResult)
+		{
+			hitResult->Location;
+		}
+
 		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
 		SetDamage(0.0f);
 		DeltaValue = 0 - DeltaValue;
@@ -92,7 +100,18 @@ void UMyAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 void UMyAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
 {
-	//GAMEPLAYATTRIBUTE_REPNOTIFY(UMyAttributeSet, Health, OldHealth);
+	if (GetOwningActor()->HasAuthority())
+	{
+		int j = 0;
+	}
+	else
+	{
+		int i = 0;
+	}
+
+#if 1
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UMyAttributeSet, Health, OldHealth);
+#else
 	if (GetActorInfo() == NULL)
 	{
 		return;
@@ -107,4 +126,5 @@ void UMyAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
 			Owner->HandleHealthChanged(DeltaValue);
 		}
 	}
+#endif
 }
