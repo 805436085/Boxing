@@ -26,8 +26,5 @@ protected:
 		float NativeDirection;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Native")
-		bool IsDead;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Native")
 		AMyCharacterBase* TPCharacter;
 };

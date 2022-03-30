@@ -143,6 +143,8 @@ void AMyCharacterBase::OnRep_PlayerState()
 		//BindASCInput();
 		AttributeSet->SetHealth(AttributeSet->GetMaxHealth());
 	}
+
+	OnClientInit();
 }
 
 void AMyCharacterBase::HandleSPChanged(float DeltaValue)
@@ -160,6 +162,15 @@ void AMyCharacterBase::HandleSPChanged(float DeltaValue)
 
 void AMyCharacterBase::UpdateHP(float HP)
 {
+	if (HasAuthority())
+	{
+		int i = 0;
+	}
+	else
+	{
+		int i = 0;
+	}
+
 	if (AttributeSet.IsValid())
 	{
 		AttributeSet->SetHealth(HP);

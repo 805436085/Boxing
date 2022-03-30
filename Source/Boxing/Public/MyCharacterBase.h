@@ -38,6 +38,8 @@ public:
 
 	virtual void OnRep_PlayerState();
 
+	
+
 public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = custom)
 		void NotifyBegin_OnMeleeAttack();
@@ -82,6 +84,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = custom)
 		void GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UMyGameplayAbilityBase*>& ActiveAbilities);
 
+	UFUNCTION(BlueprintImplementableEvent, Category = custom)
+		void OnClientInit();
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = custom)
 		void InitBoxCollision();
@@ -112,6 +117,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = custom)
 		TArray<AMyCharacterBase*> CollisionTargetArray;
+
+	// Death Animation
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GAS|Animation")
+		UAnimMontage* DeathMontage;
 
 /**
 * Setters for Attributes. Only use these in special cases like Respawning, otherwise use a GE to change Attributes.

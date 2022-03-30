@@ -97,6 +97,7 @@ void UMyAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
 	{
 		return;
 	}
+
 	AMyCharacterBase* Owner = Cast<AMyCharacterBase>(GetActorInfo()->AvatarActor);
 	if (Owner)
 	{
