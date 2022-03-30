@@ -74,6 +74,7 @@ void AMyCharacterBase::PossessedBy(AController * NewController)
 		AttributeSet = Cast<UMyAttributeSet>(PS->GetAttributeSet());
 
 		AddStartupGameplayAbilities();
+		AttributeSet->SetHealth(AttributeSet->GetMaxHealth());
 	}
 }
 
@@ -140,6 +141,7 @@ void AMyCharacterBase::OnRep_PlayerState()
 
 		// Bind player input to the AbilitySystemComponent. Also called in OnRep_PlayerState because of a potential race condition.
 		//BindASCInput();
+		AttributeSet->SetHealth(AttributeSet->GetMaxHealth());
 	}
 }
 
