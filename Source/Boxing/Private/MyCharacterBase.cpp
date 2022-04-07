@@ -8,6 +8,7 @@
 AMyCharacterBase::AMyCharacterBase()
 	: bAbilitiesInitialized(false)
 	, bIsAttacking(false)
+	, isDead(false)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -100,7 +101,7 @@ void AMyCharacterBase::RemoveStartupGameplayAbilities()
 {
 }
 
-void AMyCharacterBase::HandleHealthChanged(float DeltaValue)
+void AMyCharacterBase::HandleHealthChanged(float newHealth)
 {
 	if (AbilitySystemComponent.IsValid())
 	{
@@ -108,11 +109,16 @@ void AMyCharacterBase::HandleHealthChanged(float DeltaValue)
 		{
 			int i = 0;
 		}
-		OnDamaged(DeltaValue);
+		OnHealthChanged(newHealth);
 	}
 	else
 	{
 		int j = 0;
+	}
+
+	if (!isAlive() && !isDie())
+	{
+		playDie();
 	}
 }
 
@@ -185,7 +191,7 @@ void AMyCharacterBase::GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityT
 	}
 }
 
-float AMyCharacterBase::GetHealth() const
+float AMyCharacterBase::GetHealth()
 {
 	if (AttributeSet.IsValid())
 	{
@@ -193,6 +199,42 @@ float AMyCharacterBase::GetHealth() const
 	}
 
 	return 0.0f;
+}
+
+float AMyCharacterBase::GetMaxHealth()
+{
+	if (AttributeSet.IsValid())
+	{
+		return AttributeSet->GetMaxHealth();
+	}
+
+	return 0.0f;
+}
+
+bool AMyCharacterBase::isAlive()
+{
+	if (AttributeSet.IsValid() && AttributeSet->GetHealth() > 0)
+	{
+			return true;
+	}
+
+	return false;
+}
+
+void AMyCharacterBase::playHurt()
+{
+	PlayAnimMontage(HurtMontage);
+}
+
+void AMyCharacterBase::playDie()
+{
+	isDead = true;
+	PlayAnimMontage(DeathMontage);
+}
+
+bool AMyCharacterBase::isDie()
+{
+	return isDead;
 }
 
 void AMyCharacterBase::SetHP(float Health)

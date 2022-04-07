@@ -40,6 +40,7 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 	{
 		TargetCharacter = Cast<AMyCharacterBase>(Data.Target.AbilityActorInfo->AvatarActor.Get());
 	}
+
 	if (TargetCharacter)
 	{
 		if (!TargetCharacter->HasAuthority())
@@ -51,6 +52,10 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 			int i = 0;
 		}
 	}
+	else
+	{
+		return;
+	}
 	
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
@@ -58,11 +63,13 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 		// First clamp it
 		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
 		
+		/*
 		if (TargetCharacter)
 		{
 			// Call for all health changes
 			TargetCharacter->HandleHealthChanged(DeltaValue);
 		}
+		*/
 	}
 	else if (Data.EvaluatedData.Attribute == GetSPAttribute())
 	{
@@ -81,12 +88,18 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 			hitResult->Location;
 		}
 
-		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
-		SetDamage(0.0f);
-		DeltaValue = 0 - DeltaValue;
-		if (TargetCharacter)
+		bool wasAlive = TargetCharacter->isAlive();
+		const float localDamage = GetDamage();
+		if (localDamage > 0.f)
 		{
-			TargetCharacter->HandleHealthChanged(DeltaValue);
+			float newHealth = GetHealth() - localDamage;
+			SetHealth(FMath::Clamp(newHealth, 0.0f, GetMaxHealth()));
+			SetDamage(0.0f);
+			
+			if (wasAlive)
+			{
+				TargetCharacter->playHurt();
+			}
 		}
 	}
 }

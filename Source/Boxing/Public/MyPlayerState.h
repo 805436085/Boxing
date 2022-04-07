@@ -33,4 +33,13 @@ protected:
 	/** List of attributes modified by the ability system */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
 		UMyAttributeSet* AttributeSet;
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	FDelegateHandle HealthChangedDelegateHandle;
+
+	// Attribute changed callbacks
+	virtual void HealthChanged(const FOnAttributeChangeData& Data);
 };

@@ -34,7 +34,7 @@ public:
 	/** Attempts to remove any startup gameplay abilities */
 	void RemoveStartupGameplayAbilities();
 
-	void HandleHealthChanged(float DeltaValue);
+	void HandleHealthChanged(float newHealth);
 
 	virtual void OnRep_PlayerState();
 
@@ -60,7 +60,7 @@ public:
 		void NotifyEnd_OnMeleeAttack_RightHand();
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = custom)
-		void OnHealthChanged(float DeltaValue);
+		void OnHealthChanged(float newHealth);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = custom)
 		void OnDamaged(float DeltaValue);
@@ -88,7 +88,22 @@ public:
 		void OnClientInit();
 
 	UFUNCTION(BlueprintCallable, Category = "GAS|Attributes")
-		float GetHealth() const;
+		float GetHealth();
+
+	UFUNCTION(BlueprintCallable, Category = "GAS|Attributes")
+		float GetMaxHealth();
+
+	UFUNCTION(BlueprintCallable, Category = custom)
+		bool isAlive();
+
+	UFUNCTION(BlueprintCallable, Category = custom)
+		void playHurt();
+
+	UFUNCTION(BlueprintCallable, Category = custom)
+		void playDie();
+
+	UFUNCTION(BlueprintCallable, Category = custom)
+		bool isDie();
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = custom)
@@ -125,6 +140,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GAS|Animation")
 		UAnimMontage* DeathMontage;
 
+	// Hurt Animation
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GAS|Animation")
+		UAnimMontage* HurtMontage;
 /**
 * Setters for Attributes. Only use these in special cases like Respawning, otherwise use a GE to change Attributes.
 * These change the Attribute's Base Value.
@@ -140,4 +158,6 @@ protected:
 private:
 	const int32 defaultLevel = 1;
 	bool ASCInputBound = false;
+
+	bool isDead;
 };

@@ -2,7 +2,7 @@
 
 
 #include "MyPlayerState.h"
-
+#include "MyCharacterBase.h"
 
 AMyPlayerState::AMyPlayerState()
 {
@@ -21,6 +21,8 @@ AMyPlayerState::AMyPlayerState()
 
 	// Create the attribute set, this replicates by default
 	AttributeSet = CreateDefaultSubobject<UMyAttributeSet>(TEXT("AttributeSet"));
+
+	
 }
 
 UAbilitySystemComponent* AMyPlayerState::GetAbilitySystemComponent() const
@@ -31,4 +33,26 @@ UAbilitySystemComponent* AMyPlayerState::GetAbilitySystemComponent() const
 UMyAttributeSet* AMyPlayerState::GetAttributeSet() const
 {
 	return AttributeSet;
+}
+
+void AMyPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (AbilitySystemComponent)
+	{
+		HealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &AMyPlayerState::HealthChanged);
+	}
+}
+
+void AMyPlayerState::HealthChanged(const FOnAttributeChangeData& Data)
+{
+	float oldValue = Data.OldValue;
+	float newValue = Data.NewValue;
+
+	AMyCharacterBase* hero = Cast<AMyCharacterBase>(GetPawn());
+	if (hero)
+	{
+		hero->HandleHealthChanged(newValue);
+	}
 }
