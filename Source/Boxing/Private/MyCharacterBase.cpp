@@ -3,6 +3,7 @@
 
 #include "MyCharacterBase.h"
 #include "MyPlayerState.h"
+#include "BoxingGameModeBase.h"
 
 // Sets default values
 AMyCharacterBase::AMyCharacterBase()
@@ -99,6 +100,24 @@ void AMyCharacterBase::AddStartupGameplayAbilities()
 
 void AMyCharacterBase::RemoveStartupGameplayAbilities()
 {
+	if (!HasAuthority() || !AbilitySystemComponent.IsValid() || !AbilitySystemComponent->getAbilitiesHaveGiven())
+		return;
+
+	TArray<FGameplayAbilitySpecHandle> AbilityToRemove;
+	for (const FGameplayAbilitySpec& spec : AbilitySystemComponent->GetActivatableAbilities())
+	{
+		if ((spec.SourceObject == this) && GameplayAbilities.Contains(spec.Ability->GetClass()))
+		{
+			AbilityToRemove.Add(spec.Handle);
+		}
+	}
+
+	for (const FGameplayAbilitySpecHandle& handle : AbilityToRemove)
+	{
+		AbilitySystemComponent->ClearAbility(handle);
+	}
+
+	AbilitySystemComponent->setAbilitiesHaveGiven(false);
 }
 
 void AMyCharacterBase::HandleHealthChanged(float newHealth)
@@ -118,7 +137,7 @@ void AMyCharacterBase::HandleHealthChanged(float newHealth)
 
 	if (!isAlive() && !isDie())
 	{
-		playDie();
+		Die();
 	}
 }
 
@@ -226,15 +245,35 @@ void AMyCharacterBase::playHurt()
 	PlayAnimMontage(HurtMontage);
 }
 
-void AMyCharacterBase::playDie()
+void AMyCharacterBase::Die()
 {
 	isDead = true;
+	RemoveStartupGameplayAbilities();
+	playDie();
+}
+
+void AMyCharacterBase::playDie()
+{
 	PlayAnimMontage(DeathMontage);
 }
 
 bool AMyCharacterBase::isDie()
 {
 	return isDead;
+}
+
+void AMyCharacterBase::FinishDying()
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		ABoxingGameModeBase* GM = Cast<ABoxingGameModeBase>(GetWorld()->GetAuthGameMode());
+		if (GM)
+		{
+
+		}
+	}
+
+	Destroy();
 }
 
 void AMyCharacterBase::SetHP(float Health)

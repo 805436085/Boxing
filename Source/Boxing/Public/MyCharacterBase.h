@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
-#include "Boxing/Ability/MyGameplayAbilityBase.h"
+#include "../Ability/MyGameplayAbilityBase.h"
 #include "GameplayAbilitySpec.h"
 #include "MyCharacterBase.generated.h"
 
@@ -100,10 +100,17 @@ public:
 		void playHurt();
 
 	UFUNCTION(BlueprintCallable, Category = custom)
+		void Die();
+
+	UFUNCTION(BlueprintCallable, Category = custom)
 		void playDie();
 
 	UFUNCTION(BlueprintCallable, Category = custom)
 		bool isDie();
+
+	UFUNCTION(BlueprintCallable, Category = custom)
+		void FinishDying();
+	
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = custom)

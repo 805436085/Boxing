@@ -13,5 +13,14 @@ UCLASS()
 class BOXING_API ABoxingGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+		
+public:
+	ABoxingGameModeBase();
+
+public:
+	virtual void heroDie(AController* Controller);
+	virtual void RespawnHero(AController* Controller);
+
+private:
+	float RespawnDelay;
 };
