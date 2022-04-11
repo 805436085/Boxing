@@ -5,5 +5,4 @@
 
 void AMyPlayerController::OnRep_PlayerState()
 {
-	init();
 }

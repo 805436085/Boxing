@@ -3,7 +3,7 @@
 
 #include "MyCharacterBase.h"
 #include "MyPlayerState.h"
-#include "BoxingGameModeBase.h"
+#include "Boxing/BoxingGameModeBase.h"
 
 // Sets default values
 AMyCharacterBase::AMyCharacterBase()
@@ -128,6 +128,10 @@ void AMyCharacterBase::HandleHealthChanged(float newHealth)
 		{
 			int i = 0;
 		}
+		else
+		{
+			int i = 0;
+		}
 		OnHealthChanged(newHealth);
 	}
 	else
@@ -135,9 +139,16 @@ void AMyCharacterBase::HandleHealthChanged(float newHealth)
 		int j = 0;
 	}
 
-	if (!isAlive() && !isDie())
+	if (!isAlive())
 	{
-		Die();
+		if (!isDie())
+		{
+			Die();
+		}
+	}
+	else
+	{
+		playHurt();
 	}
 }
 
@@ -267,9 +278,15 @@ void AMyCharacterBase::FinishDying()
 	if (GetLocalRole() == ROLE_Authority)
 	{
 		ABoxingGameModeBase* GM = Cast<ABoxingGameModeBase>(GetWorld()->GetAuthGameMode());
+		ABoxingGameModeBase* GM2 = dynamic_cast<ABoxingGameModeBase*>(GetWorld()->GetAuthGameMode());
+		if (GM2)
+		{
+			int i = 0;
+		}
+		
 		if (GM)
 		{
-
+			GM->heroDie(GetController());
 		}
 	}
 
