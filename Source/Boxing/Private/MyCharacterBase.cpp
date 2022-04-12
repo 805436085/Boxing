@@ -4,6 +4,7 @@
 #include "MyCharacterBase.h"
 #include "MyPlayerState.h"
 #include "Boxing/BoxingGameModeBase.h"
+#include "Engine.h"
 
 // Sets default values
 AMyCharacterBase::AMyCharacterBase()
@@ -91,6 +92,8 @@ void AMyCharacterBase::AddStartupGameplayAbilities()
 
 	for (TSubclassOf<UMyGameplayAbilityBase>& StartupAbility : GameplayAbilities)
 	{
+		FString str = StartupAbility->GetName();
+		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, str);
 		AbilitySystemComponent->GiveAbility(
 			FGameplayAbilitySpec(StartupAbility, 1, INDEX_NONE, this));
 	}
@@ -137,18 +140,6 @@ void AMyCharacterBase::HandleHealthChanged(float newHealth)
 	else
 	{
 		int j = 0;
-	}
-
-	if (!isAlive())
-	{
-		if (!isDie())
-		{
-			Die();
-		}
-	}
-	else
-	{
-		playHurt();
 	}
 }
 

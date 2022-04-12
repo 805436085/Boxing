@@ -96,10 +96,10 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 			SetHealth(FMath::Clamp(newHealth, 0.0f, GetMaxHealth()));
 			SetDamage(0.0f);
 			
-			// if (wasAlive)
-			// {
-			// 	TargetCharacter->playHurt();
-			// }
+			if (wasAlive)
+			{
+				TargetCharacter->playHurt();
+			}
 		}
 	}
 }
