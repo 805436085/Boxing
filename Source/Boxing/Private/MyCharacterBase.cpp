@@ -269,11 +269,6 @@ void AMyCharacterBase::FinishDying()
 	if (GetLocalRole() == ROLE_Authority)
 	{
 		ABoxingGameModeBase* GM = Cast<ABoxingGameModeBase>(GetWorld()->GetAuthGameMode());
-		ABoxingGameModeBase* GM2 = dynamic_cast<ABoxingGameModeBase*>(GetWorld()->GetAuthGameMode());
-		if (GM2)
-		{
-			int i = 0;
-		}
 		
 		if (GM)
 		{
@@ -283,6 +278,40 @@ void AMyCharacterBase::FinishDying()
 
 	Destroy();
 }
+
+void AMyCharacterBase::preMeleeAttack_Implementation()
+{
+	doMeleeAttack();
+}
+
+void AMyCharacterBase::doMeleeAttack_Implementation()
+{
+	if (HasAuthority())
+	{
+		doMeleeAttackServer();
+	}
+	else
+	{
+		doMeleeAttackClient();
+	}
+}
+
+// void AMyCharacterBase::preMeleeAttack()
+// {
+// 	if (HasAuthority())
+// 	{
+// 		doMeleeAttack();
+// 	}
+// 	else
+// 	{
+// 		doMeleeAttackClient();
+// 	}
+// }
+
+// void AMyCharacterBase::preMeleeAttack()
+// {
+// 	doMeleeAttack();
+// }
 
 void AMyCharacterBase::SetHP(float Health)
 {

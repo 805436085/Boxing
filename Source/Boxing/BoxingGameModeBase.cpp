@@ -39,8 +39,6 @@ void ABoxingGameModeBase::heroDie(AController* Controller)
 
 void ABoxingGameModeBase::RespawnHero(AController* Controller)
 {
-	printf("%s:%s", __FILE__, __FUNCTION__);
-	
 	if (Controller->IsPlayerController())
 	{
 		// Respawn player hero
