@@ -93,7 +93,7 @@ void AMyCharacterBase::AddStartupGameplayAbilities()
 	for (TSubclassOf<UMyGameplayAbilityBase>& StartupAbility : GameplayAbilities)
 	{
 		FString str = StartupAbility->GetName();
-		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, str);
+		
 		AbilitySystemComponent->GiveAbility(
 			FGameplayAbilitySpec(StartupAbility, 1, INDEX_NONE, this));
 	}
@@ -279,20 +279,20 @@ void AMyCharacterBase::FinishDying()
 	Destroy();
 }
 
-void AMyCharacterBase::preMeleeAttack_Implementation()
+void AMyCharacterBase::preMeleeAttack_Implementation(bool isFist)
 {
-	doMeleeAttack();
+	doMeleeAttack(isFist);
 }
 
-void AMyCharacterBase::doMeleeAttack_Implementation()
+void AMyCharacterBase::doMeleeAttack_Implementation(bool isFist)
 {
 	if (HasAuthority())
 	{
-		doMeleeAttackServer();
+		doMeleeAttackServer(isFist);
 	}
 	else
 	{
-		doMeleeAttackClient();
+		doMeleeAttackClient(isFist);
 	}
 }
 

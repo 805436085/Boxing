@@ -112,16 +112,16 @@ public:
 		void FinishDying();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = custom)
-		void preMeleeAttack();
+		void preMeleeAttack(bool isFist);
 
 	UFUNCTION(NetMulticast, Reliable, Category = custom)
-		void doMeleeAttack();
+		void doMeleeAttack(bool isFist);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = custom)
-			void doMeleeAttackServer();
+			void doMeleeAttackServer(bool isFist);
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = custom)
-		void doMeleeAttackClient();
+		void doMeleeAttackClient(bool isFist);
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = custom)
