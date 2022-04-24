@@ -2,35 +2,30 @@
 
 
 #include "MyCharacterBase.h"
-#include "GameFramework/PlayerState.h"
+#include "MyPlayerState.h"
+#include "Boxing/BoxingGameModeBase.h"
+#include "Engine.h"
 
 // Sets default values
 AMyCharacterBase::AMyCharacterBase()
 	: bAbilitiesInitialized(false)
 	, bIsAttacking(false)
+	, isDead(false)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	// Create ability system component, and set it to be explicitly replicated
-	AbilitySystemComponent = CreateDefaultSubobject<UMyAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
-	AbilitySystemComponent->SetIsReplicated(true);
-
-	// Create the attribute set, this replicates by default
-	AttributeSet = CreateDefaultSubobject<UMyAttributeSet>(TEXT("AttributeSet"));
 }
 
-UAbilitySystemComponent * AMyCharacterBase::GetAbilitySystemComponent() const
+UAbilitySystemComponent* AMyCharacterBase::GetAbilitySystemComponent() const
 {
-	return AbilitySystemComponent;
+	return AbilitySystemComponent.Get();
 }
-
 
 void AMyCharacterBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if (AttributeSet && bAbilitiesInitialized)
+	if (AttributeSet.IsValid() && bAbilitiesInitialized)
 	{
 		float SP = DeltaSeconds * 10 + AttributeSet->GetSP();
 		if (SP > AttributeSet->GetMaxSP())
@@ -41,15 +36,48 @@ void AMyCharacterBase::Tick(float DeltaSeconds)
 	}
 }
 
+void AMyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (HasAuthority())
+	{
+		int i = 0;
+	}
+	else
+	{
+		int j = 0;
+	}
+
+	// Bind player input to the AbilitySystemComponent. Also called in OnRep_PlayerState because of a potential race condition.
+	//BindASCInput();
+}
+
 //
 void AMyCharacterBase::PossessedBy(AController * NewController)
 {
 	Super::PossessedBy(NewController);
 
-	if (AbilitySystemComponent)
+	if (HasAuthority())
 	{
+		int i = 0;
+	}
+	else
+	{
+		int i = 0;
+	}
+
+	AMyPlayerState* PS = GetPlayerState<AMyPlayerState>();
+	if (PS)
+	{
+		AbilitySystemComponent = Cast<UMyAbilitySystemComponent>(PS->GetAbilitySystemComponent());
+		// AI won't have PlayerControllers so we can init again here just to be sure. No harm in initing twice for heroes that have PlayerControllers.
+		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, this);
+
+		AttributeSet = Cast<UMyAttributeSet>(PS->GetAttributeSet());
+
 		AddStartupGameplayAbilities();
-		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+		AttributeSet->SetHealth(AttributeSet->GetMaxHealth());
 	}
 }
 
@@ -59,31 +87,55 @@ void AMyCharacterBase::UnPossessed()
 
 void AMyCharacterBase::AddStartupGameplayAbilities()
 {
-	check(AbilitySystemComponent);
+	if (!HasAuthority() || !AbilitySystemComponent.IsValid() || AbilitySystemComponent->getAbilitiesHaveGiven())
+		return;
 
-	if (!bAbilitiesInitialized)
+	for (TSubclassOf<UMyGameplayAbilityBase>& StartupAbility : GameplayAbilities)
 	{
-		for (int i = 0; i < GameplayAbilities.Num(); i++)
-		{
-			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(GameplayAbilities[i]/*, 1, INDEX_NONE, this*/));
-		}
-		bAbilitiesInitialized = true;
+		FString str = StartupAbility->GetName();
+		
+		AbilitySystemComponent->GiveAbility(
+			FGameplayAbilitySpec(StartupAbility, 1, INDEX_NONE, this));
 	}
+
+	AbilitySystemComponent->setAbilitiesHaveGiven(true);
 }
 
 void AMyCharacterBase::RemoveStartupGameplayAbilities()
 {
+	if (!HasAuthority() || !AbilitySystemComponent.IsValid() || !AbilitySystemComponent->getAbilitiesHaveGiven())
+		return;
+
+	TArray<FGameplayAbilitySpecHandle> AbilityToRemove;
+	for (const FGameplayAbilitySpec& spec : AbilitySystemComponent->GetActivatableAbilities())
+	{
+		if ((spec.SourceObject == this) && GameplayAbilities.Contains(spec.Ability->GetClass()))
+		{
+			AbilityToRemove.Add(spec.Handle);
+		}
+	}
+
+	for (const FGameplayAbilitySpecHandle& handle : AbilityToRemove)
+	{
+		AbilitySystemComponent->ClearAbility(handle);
+	}
+
+	AbilitySystemComponent->setAbilitiesHaveGiven(false);
 }
 
-void AMyCharacterBase::HandleHealthChanged(float DeltaValue)
+void AMyCharacterBase::HandleHealthChanged(float newHealth)
 {
-	if (bAbilitiesInitialized)
+	if (AbilitySystemComponent.IsValid())
 	{
 		if (!HasAuthority())
 		{
 			int i = 0;
 		}
-		OnDamaged(DeltaValue);
+		else
+		{
+			int i = 0;
+		}
+		OnHealthChanged(newHealth);
 	}
 	else
 	{
@@ -91,17 +143,40 @@ void AMyCharacterBase::HandleHealthChanged(float DeltaValue)
 	}
 }
 
+// Client only
 void AMyCharacterBase::OnRep_PlayerState()
 {
-	if (AbilitySystemComponent)
+	Super::OnRep_PlayerState();
+
+	if (HasAuthority())
 	{
-		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+		int i = 0;
 	}
+	else
+	{
+		int i = 0;
+	}
+
+	AMyPlayerState* PS = GetPlayerState<AMyPlayerState>();
+	if (PS)
+	{
+		AbilitySystemComponent = Cast<UMyAbilitySystemComponent>(PS->GetAbilitySystemComponent());
+		// AI won't have PlayerControllers so we can init again here just to be sure. No harm in initing twice for heroes that have PlayerControllers.
+		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, this);
+
+		AttributeSet = Cast<UMyAttributeSet>(PS->GetAttributeSet());
+
+		// Bind player input to the AbilitySystemComponent. Also called in OnRep_PlayerState because of a potential race condition.
+		//BindASCInput();
+		AttributeSet->SetHealth(AttributeSet->GetMaxHealth());
+	}
+
+	OnClientInit();
 }
 
 void AMyCharacterBase::HandleSPChanged(float DeltaValue)
 {
-	if (bAbilitiesInitialized && AttributeSet)
+	if (bAbilitiesInitialized && AttributeSet.IsValid())
 	{
 		float SP = AttributeSet->GetSP() + DeltaValue;
 		if (SP > AttributeSet->GetMaxSP())
@@ -114,7 +189,16 @@ void AMyCharacterBase::HandleSPChanged(float DeltaValue)
 
 void AMyCharacterBase::UpdateHP(float HP)
 {
-	if (AttributeSet)
+	if (HasAuthority())
+	{
+		int i = 0;
+	}
+	else
+	{
+		int i = 0;
+	}
+
+	if (AttributeSet.IsValid())
 	{
 		AttributeSet->SetHealth(HP);
 	}
@@ -122,8 +206,137 @@ void AMyCharacterBase::UpdateHP(float HP)
 
 void AMyCharacterBase::GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UMyGameplayAbilityBase*>& ActiveAbilities)
 {
-	if (AbilitySystemComponent)
+	if (AbilitySystemComponent.IsValid())
 	{
 		AbilitySystemComponent->GetActiveAbilitiesWithTags(AbilityTags, ActiveAbilities);
+	}
+}
+
+float AMyCharacterBase::GetHealth()
+{
+	if (AttributeSet.IsValid())
+	{
+		return AttributeSet->GetHealth();
+	}
+
+	return 0.0f;
+}
+
+float AMyCharacterBase::GetMaxHealth()
+{
+	if (AttributeSet.IsValid())
+	{
+		return AttributeSet->GetMaxHealth();
+	}
+
+	return 0.0f;
+}
+
+bool AMyCharacterBase::isAlive()
+{
+	if (AttributeSet.IsValid() && AttributeSet->GetHealth() > 0)
+	{
+			return true;
+	}
+
+	return false;
+}
+
+void AMyCharacterBase::playHurt()
+{
+	PlayAnimMontage(HurtMontage);
+}
+
+void AMyCharacterBase::Die()
+{
+	isDead = true;
+	RemoveStartupGameplayAbilities();
+	playDie();
+}
+
+void AMyCharacterBase::playDie()
+{
+	PlayAnimMontage(DeathMontage);
+}
+
+bool AMyCharacterBase::isDie()
+{
+	return isDead;
+}
+
+void AMyCharacterBase::FinishDying()
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		ABoxingGameModeBase* GM = Cast<ABoxingGameModeBase>(GetWorld()->GetAuthGameMode());
+		
+		if (GM)
+		{
+			GM->heroDie(GetController());
+		}
+	}
+
+	Destroy();
+}
+
+void AMyCharacterBase::preMeleeAttack_Implementation(bool isFist)
+{
+	doMeleeAttack(isFist);
+}
+
+void AMyCharacterBase::doMeleeAttack_Implementation(bool isFist)
+{
+	if (HasAuthority())
+	{
+		doMeleeAttackServer(isFist);
+	}
+	else
+	{
+		doMeleeAttackClient(isFist);
+	}
+}
+
+// void AMyCharacterBase::preMeleeAttack()
+// {
+// 	if (HasAuthority())
+// 	{
+// 		doMeleeAttack();
+// 	}
+// 	else
+// 	{
+// 		doMeleeAttackClient();
+// 	}
+// }
+
+// void AMyCharacterBase::preMeleeAttack()
+// {
+// 	doMeleeAttack();
+// }
+
+void AMyCharacterBase::SetHP(float Health)
+{
+	if (AttributeSet.IsValid())
+		AttributeSet->SetHealth(Health);
+}
+
+void AMyCharacterBase::SetMP(float Mana)
+{
+	if (AttributeSet.IsValid())
+		AttributeSet->SetMana(Mana);
+}
+
+void AMyCharacterBase::SetSP(float Stamina)
+{
+	if (AttributeSet.IsValid())
+		AttributeSet->SetSP(Stamina);
+}
+
+void AMyCharacterBase::BindASCInput()
+{
+	if (!ASCInputBound && AbilitySystemComponent.IsValid() && IsValid(InputComponent))
+	{
+		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),
+			FString("CancelTarget"), FString("EGDAbilityInputID"), static_cast<int32>(EGDAbilityInputID::Confirm), static_cast<int32>(EGDAbilityInputID::Cancel)));
+		ASCInputBound = true;
 	}
 }

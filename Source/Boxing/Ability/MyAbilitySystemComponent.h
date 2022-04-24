@@ -18,5 +18,11 @@ class BOXING_API UMyAbilitySystemComponent : public UAbilitySystemComponent
 public:
 	UMyAbilitySystemComponent();
 
+	void setAbilitiesHaveGiven(bool b);
+	bool getAbilitiesHaveGiven();
+
 	void GetActiveAbilitiesWithTags(const FGameplayTagContainer& GameplayTagContainer, TArray<UMyGameplayAbilityBase*>& ActiveAbilities);
+
+private:
+	bool m_bAbilitiesHaveGiven;
 };

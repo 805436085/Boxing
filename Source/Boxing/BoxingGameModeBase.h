@@ -3,15 +3,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "GameFramework/GameMode.h"
 #include "BoxingGameModeBase.generated.h"
 
 /**
  * 
  */
-UCLASS()
-class BOXING_API ABoxingGameModeBase : public AGameModeBase
+UCLASS(minimalapi)
+class ABoxingGameModeBase : public AGameMode
 {
 	GENERATED_BODY()
+		
+public:
+	ABoxingGameModeBase();
+
+public:
+	virtual void heroDie(AController* Controller);
+	virtual void RespawnHero(AController* Controller);
+
+protected:
+	TSubclassOf<class AMyCharacterBase> HeroClass;
 	
+private:
+	float RespawnDelay;
 };

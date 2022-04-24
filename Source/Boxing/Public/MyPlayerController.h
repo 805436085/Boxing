@@ -18,7 +18,7 @@ class BOXING_API AMyPlayerController : public APlayerController
 public:
 	virtual void OnRep_PlayerState() override;
 
-	UFUNCTION(BlueprintImplementableEvent, Category = custom)
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = custom)
 		void init();
 	
 };

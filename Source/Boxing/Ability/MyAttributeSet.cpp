@@ -5,6 +5,7 @@
 #include "GameplayEffect.h"
 #include "GameplayEffectExtension.h"
 #include "MyCharacterBase.h"
+#include "Net/UnrealNetwork.h"
 
 UMyAttributeSet::UMyAttributeSet()
 	: Health(100.0f)
@@ -25,6 +26,8 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 {
 	Super::PostGameplayEffectExecute(Data);
 
+	FGameplayEffectContextHandle Context = Data.EffectSpec.GetContext();
+
 	// Compute the delta between old and new, if it is available
 	float DeltaValue = 0;
 	if (Data.EvaluatedData.ModifierOp == EGameplayModOp::Type::Additive)
@@ -42,6 +45,10 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 		if (!TargetCharacter->HasAuthority())
 		{
 			int j = 0;
+		}
+		else
+		{
+			int i = 0;
 		}
 	}
 	
@@ -68,12 +75,56 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 	}
 	else if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
-		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
-		SetDamage(0.0f);
-		DeltaValue = 0 - DeltaValue;
-		if (TargetCharacter)
+		const FHitResult* hitResult = Context.GetHitResult();
+		if (hitResult)
 		{
-			TargetCharacter->HandleHealthChanged(DeltaValue);
+			hitResult->Location;
+		}
+
+		float fDamage = GetDamage();
+		SetDamage(0.0f);
+		if (fDamage > 0)
+		{
+			float fNewHealth = GetHealth() - fDamage;
+			SetHealth(FMath::Clamp(fNewHealth, 0.0f, GetMaxHealth()));
 		}
 	}
+}
+
+void UMyAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UMyAttributeSet, Health, COND_None, REPNOTIFY_Always);
+}
+
+void UMyAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
+{
+	if (GetOwningActor()->HasAuthority())
+	{
+		int j = 0;
+	}
+	else
+	{
+		int i = 0;
+	}
+
+#if 1
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UMyAttributeSet, Health, OldHealth);
+#else
+	if (GetActorInfo() == NULL)
+	{
+		return;
+	}
+
+	AMyCharacterBase* Owner = Cast<AMyCharacterBase>(GetActorInfo()->AvatarActor);
+	if (Owner)
+	{
+		float DeltaValue = Health.GetCurrentValue() - OldHealth.GetCurrentValue();
+		if (DeltaValue != 0)
+		{
+			Owner->HandleHealthChanged(DeltaValue);
+		}
+	}
+#endif
 }

@@ -26,10 +26,11 @@ public:
 	UMyAttributeSet();
 
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData &Data);
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 public:
 	/** Current Health, when 0 we expect owner to die. Capped by MaxHealth */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Health")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Health", ReplicatedUsing = OnRep_Health)
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UMyAttributeSet, Health)
 
@@ -77,4 +78,12 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Damage")
 	FGameplayAttributeData Damage;
 	ATTRIBUTE_ACCESSORS(UMyAttributeSet, Damage)
+
+protected:
+	/**
+	* These OnRep functions exist to make sure that the ability system internal representations are synchronized properly during replication
+	**/
+
+	UFUNCTION()
+		virtual void OnRep_Health(const FGameplayAttributeData& OldHealth);
 };
