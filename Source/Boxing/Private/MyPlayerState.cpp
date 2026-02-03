@@ -57,16 +57,16 @@ void AMyPlayerState::HealthChanged(const FOnAttributeChangeData& Data)
 
 		if (newValue < oldValue)
 		{
-			if (!hero->isAlive())
+			if (!hero->IsAlive())
 			{
-				if (!hero->isDie())
+				if (!hero->IsDead())
 				{
 					hero->Die();
 				}
 			}
 			else
 			{
-				hero->playHurt();
+				hero->PlayHurt();
 			}
 		}
 	}

@@ -40,17 +40,6 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 	{
 		TargetCharacter = Cast<AMyCharacterBase>(Data.Target.AbilityActorInfo->AvatarActor.Get());
 	}
-	if (TargetCharacter)
-	{
-		if (!TargetCharacter->HasAuthority())
-		{
-			int j = 0;
-		}
-		else
-		{
-			int i = 0;
-		}
-	}
 	
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
@@ -100,31 +89,5 @@ void UMyAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 void UMyAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
 {
-	if (GetOwningActor()->HasAuthority())
-	{
-		int j = 0;
-	}
-	else
-	{
-		int i = 0;
-	}
-
-#if 1
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UMyAttributeSet, Health, OldHealth);
-#else
-	if (GetActorInfo() == NULL)
-	{
-		return;
-	}
-
-	AMyCharacterBase* Owner = Cast<AMyCharacterBase>(GetActorInfo()->AvatarActor);
-	if (Owner)
-	{
-		float DeltaValue = Health.GetCurrentValue() - OldHealth.GetCurrentValue();
-		if (DeltaValue != 0)
-		{
-			Owner->HandleHealthChanged(DeltaValue);
-		}
-	}
-#endif
 }

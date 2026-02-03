@@ -40,15 +40,6 @@ void AMyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	if (HasAuthority())
-	{
-		int i = 0;
-	}
-	else
-	{
-		int j = 0;
-	}
-
 	// Bind player input to the AbilitySystemComponent. Also called in OnRep_PlayerState because of a potential race condition.
 	//BindASCInput();
 }
@@ -57,15 +48,6 @@ void AMyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 void AMyCharacterBase::PossessedBy(AController * NewController)
 {
 	Super::PossessedBy(NewController);
-
-	if (HasAuthority())
-	{
-		int i = 0;
-	}
-	else
-	{
-		int i = 0;
-	}
 
 	AMyPlayerState* PS = GetPlayerState<AMyPlayerState>();
 	if (PS)
@@ -127,19 +109,7 @@ void AMyCharacterBase::HandleHealthChanged(float newHealth)
 {
 	if (AbilitySystemComponent.IsValid())
 	{
-		if (!HasAuthority())
-		{
-			int i = 0;
-		}
-		else
-		{
-			int i = 0;
-		}
 		OnHealthChanged(newHealth);
-	}
-	else
-	{
-		int j = 0;
 	}
 }
 
@@ -147,15 +117,6 @@ void AMyCharacterBase::HandleHealthChanged(float newHealth)
 void AMyCharacterBase::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
-
-	if (HasAuthority())
-	{
-		int i = 0;
-	}
-	else
-	{
-		int i = 0;
-	}
 
 	AMyPlayerState* PS = GetPlayerState<AMyPlayerState>();
 	if (PS)
@@ -189,15 +150,6 @@ void AMyCharacterBase::HandleSPChanged(float DeltaValue)
 
 void AMyCharacterBase::UpdateHP(float HP)
 {
-	if (HasAuthority())
-	{
-		int i = 0;
-	}
-	else
-	{
-		int i = 0;
-	}
-
 	if (AttributeSet.IsValid())
 	{
 		AttributeSet->SetHealth(HP);
@@ -232,7 +184,7 @@ float AMyCharacterBase::GetMaxHealth()
 	return 0.0f;
 }
 
-bool AMyCharacterBase::isAlive()
+bool AMyCharacterBase::IsAlive()
 {
 	if (AttributeSet.IsValid() && AttributeSet->GetHealth() > 0)
 	{
@@ -242,7 +194,7 @@ bool AMyCharacterBase::isAlive()
 	return false;
 }
 
-void AMyCharacterBase::playHurt()
+void AMyCharacterBase::PlayHurt()
 {
 	PlayAnimMontage(HurtMontage);
 }
@@ -251,15 +203,15 @@ void AMyCharacterBase::Die()
 {
 	isDead = true;
 	RemoveStartupGameplayAbilities();
-	playDie();
+	PlayDie();
 }
 
-void AMyCharacterBase::playDie()
+void AMyCharacterBase::PlayDie()
 {
 	PlayAnimMontage(DeathMontage);
 }
 
-bool AMyCharacterBase::isDie()
+bool AMyCharacterBase::IsDead()
 {
 	return isDead;
 }
@@ -295,23 +247,6 @@ void AMyCharacterBase::doMeleeAttack_Implementation(bool isFist)
 		doMeleeAttackClient(isFist);
 	}
 }
-
-// void AMyCharacterBase::preMeleeAttack()
-// {
-// 	if (HasAuthority())
-// 	{
-// 		doMeleeAttack();
-// 	}
-// 	else
-// 	{
-// 		doMeleeAttackClient();
-// 	}
-// }
-
-// void AMyCharacterBase::preMeleeAttack()
-// {
-// 	doMeleeAttack();
-// }
 
 void AMyCharacterBase::SetHP(float Health)
 {

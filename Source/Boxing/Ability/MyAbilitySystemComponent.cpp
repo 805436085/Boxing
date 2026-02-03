@@ -23,9 +23,6 @@ void UMyAbilitySystemComponent::GetActiveAbilitiesWithTags(const FGameplayTagCon
 	TArray<FGameplayAbilitySpec*> AbilitiesToActivate;
 	GetActivatableGameplayAbilitySpecsByAllMatchingTags(GameplayTagContainer, AbilitiesToActivate, false);
 
-	if (AbilitiesToActivate.Num() == 0)
-		int j = 0;
-
 	// Iterate the list of all ability specs
 	for (FGameplayAbilitySpec* Spec : AbilitiesToActivate)
 	{
