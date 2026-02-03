@@ -42,6 +42,12 @@ void UBTService_DetectEnemy::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 		return;
 	}
 
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
 	FVector OwnerLocation = OwnerPawn->GetActorLocation();
 
 	// Use sphere overlap query for better performance
@@ -50,7 +56,7 @@ void UBTService_DetectEnemy::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 	QueryParams.AddIgnoredActor(OwnerPawn);
 
 	// Perform overlap query
-	GetWorld()->OverlapMultiByChannel(
+	World->OverlapMultiByChannel(
 		OverlapResults,
 		OwnerLocation,
 		FQuat::Identity,
@@ -60,7 +66,7 @@ void UBTService_DetectEnemy::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 	);
 
 	AActor* ClosestEnemy = nullptr;
-	float ClosestDistance = DetectionRange;
+	float ClosestDistance = FLT_MAX;
 
 	// Find the closest enemy within detection range
 	for (const FOverlapResult& Result : OverlapResults)
@@ -80,8 +86,8 @@ void UBTService_DetectEnemy::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 		// Calculate distance to potential enemy
 		float Distance = FVector::Dist(OwnerLocation, Actor->GetActorLocation());
 
-		// Check if this enemy is closer than the current closest
-		if (Distance < ClosestDistance)
+		// Check if this enemy is within range and closer than the current closest
+		if (Distance <= DetectionRange && Distance < ClosestDistance)
 		{
 			ClosestDistance = Distance;
 			ClosestEnemy = Actor;
@@ -95,7 +101,7 @@ void UBTService_DetectEnemy::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 	#if WITH_EDITOR
 	if (GEngine && GEngine->bEnableOnScreenDebugMessages)
 	{
-		DrawDebugSphere(GetWorld(), OwnerLocation, DetectionRange, 16, 
+		DrawDebugSphere(World, OwnerLocation, DetectionRange, 16, 
 			ClosestEnemy ? FColor::Red : FColor::Green, false, Interval);
 	}
 	#endif

@@ -6,11 +6,12 @@ The project includes a custom Behavior Tree Service (`BTService_DetectEnemy`) fo
 
 ### Features
 
-- **Periodic Detection**: Automatically scans for enemies at configurable intervals (default: 0.5 seconds)
+- **Periodic Detection**: Automatically scans for enemies at configurable intervals (default: 0.5 seconds). The `Interval` and `RandomDeviation` properties are inherited from the base `BTService` class and can be adjusted in the Behavior Tree editor.
 - **Range-Based Detection**: Detects enemies within a specified range (default: 1000 units)
 - **Tag-Based Filtering**: Identifies enemies using Actor tags (default: "Enemy")
 - **Blackboard Integration**: Stores the closest detected enemy in the Behavior Tree Blackboard
 - **Debug Visualization**: Shows detection range in the editor with color-coded spheres (red when enemy detected, green otherwise)
+- **Performance Optimized**: Uses physics sphere overlap queries for efficient detection
 
 ### Usage
 
