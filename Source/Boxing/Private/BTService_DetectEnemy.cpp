@@ -3,8 +3,6 @@
 #include "BTService_DetectEnemy.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
-#include "GameFramework/Character.h"
-#include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 
 UBTService_DetectEnemy::UBTService_DetectEnemy()
@@ -44,20 +42,31 @@ void UBTService_DetectEnemy::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 		return;
 	}
 
-	// Get all actors of type Character in the world
-	TArray<AActor*> FoundActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter::StaticClass(), FoundActors);
+	FVector OwnerLocation = OwnerPawn->GetActorLocation();
+
+	// Use sphere overlap query for better performance
+	TArray<FOverlapResult> OverlapResults;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(OwnerPawn);
+
+	// Perform overlap query
+	GetWorld()->OverlapMultiByChannel(
+		OverlapResults,
+		OwnerLocation,
+		FQuat::Identity,
+		ECC_Pawn,
+		FCollisionShape::MakeSphere(DetectionRange),
+		QueryParams
+	);
 
 	AActor* ClosestEnemy = nullptr;
 	float ClosestDistance = DetectionRange;
 
-	FVector OwnerLocation = OwnerPawn->GetActorLocation();
-
 	// Find the closest enemy within detection range
-	for (AActor* Actor : FoundActors)
+	for (const FOverlapResult& Result : OverlapResults)
 	{
-		// Skip self
-		if (Actor == OwnerPawn)
+		AActor* Actor = Result.GetActor();
+		if (!Actor)
 		{
 			continue;
 		}
