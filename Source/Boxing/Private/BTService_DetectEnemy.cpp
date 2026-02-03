@@ -86,8 +86,8 @@ void UBTService_DetectEnemy::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 		// Calculate distance to potential enemy
 		float Distance = FVector::Dist(OwnerLocation, Actor->GetActorLocation());
 
-		// Check if this enemy is within range and closer than the current closest
-		if (Distance <= DetectionRange && Distance < ClosestDistance)
+		// Check if this enemy is closer than the current closest
+		if (Distance < ClosestDistance)
 		{
 			ClosestDistance = Distance;
 			ClosestEnemy = Actor;
@@ -99,10 +99,7 @@ void UBTService_DetectEnemy::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 
 	// Optional: Draw debug sphere to visualize detection range in editor
 	#if WITH_EDITOR
-	if (GEngine && GEngine->bEnableOnScreenDebugMessages)
-	{
-		DrawDebugSphere(World, OwnerLocation, DetectionRange, 16, 
-			ClosestEnemy ? FColor::Red : FColor::Green, false, Interval);
-	}
+	DrawDebugSphere(World, OwnerLocation, DetectionRange, 16, 
+		ClosestEnemy ? FColor::Red : FColor::Green, false, Interval);
 	#endif
 }
