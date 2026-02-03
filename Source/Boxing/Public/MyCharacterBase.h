@@ -94,19 +94,19 @@ public:
 		float GetMaxHealth();
 
 	UFUNCTION(BlueprintCallable, Category = custom)
-		bool isAlive();
+		bool IsAlive();
 
 	UFUNCTION(BlueprintCallable, Category = custom)
-		void playHurt();
+		void PlayHurt();
 
 	UFUNCTION(BlueprintCallable, Category = custom)
 		void Die();
 
 	UFUNCTION(BlueprintCallable, Category = custom)
-		void playDie();
+		void PlayDie();
 
 	UFUNCTION(BlueprintCallable, Category = custom)
-		bool isDie();
+		bool IsDead();
 
 	UFUNCTION(BlueprintCallable, Category = custom)
 		void FinishDying();

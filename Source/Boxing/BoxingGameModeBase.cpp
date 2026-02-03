@@ -29,12 +29,6 @@ void ABoxingGameModeBase::heroDie(AController* Controller)
 
 	RespawnDelegate = FTimerDelegate::CreateUObject(this, &ABoxingGameModeBase::RespawnHero, Controller);
 	GetWorldTimerManager().SetTimer(RespawnTimerHandle, RespawnDelegate, RespawnDelay, false);
-
-	// AMyPlayerController* PC = Cast<AMyPlayerController>(Controller);
-	// if (PC)
-	// {
-	// 	PC->SetRespawnCountdown(RespawnDelay);
-	// }
 }
 
 void ABoxingGameModeBase::RespawnHero(AController* Controller)
@@ -53,18 +47,5 @@ void ABoxingGameModeBase::RespawnHero(AController* Controller)
 		Controller->UnPossess();
 		OldSpectatorPawn->Destroy();
 		Controller->Possess(Hero);
-	}
-	else
-	{
-		// Respawn AI hero
-		// FActorSpawnParameters SpawnParameters;
-		// SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-		//
-		// AMyCharacterBase* Hero = GetWorld()->SpawnActor<AMyCharacterBase>(HeroClass, EnemySpawnPoint->GetActorTransform(), SpawnParameters);
-		//
-		// APawn* OldSpectatorPawn = Controller->GetPawn();
-		// Controller->UnPossess();
-		// OldSpectatorPawn->Destroy();
-		// Controller->Possess(Hero);
 	}
 }
